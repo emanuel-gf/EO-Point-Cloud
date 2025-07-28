@@ -54,12 +54,23 @@
             "parameters": {
                 "pythonVersion": "3.12.2",
                 "pipRequirements": [
-                { "name": "numpy", "version": "1.26.4" },
-                { "name": "pandas", "version": "2.2.3" },
-                { "name": "pystac-client", "version": "0.8.6" },
-                { "name": "dotenv", "version": "0.9.9" },
-                { "name": "loguru", "version": "0.7.3" },
-                { "name": "PyYAML", "version": "6.0.1" }
+                    { "name": "numpy", "version": "1.26.4" },
+                    { "name": "pandas", "version": "2.2.3" },
+                    { "name": "pystac-client", "version": "0.8.6" },
+                    { "name": "python-dotenv", "version": "1.0.0" },
+                    { "name": "loguru", "version": "0.7.3" },
+                    { "name": "PyYAML", "version": "6.0.1" },
+                    { "name": "opencv-python", "version": "4.8.1.78" },
+                    { "name": "matplotlib", "version": "3.8.2" },
+                    { "name": "open3d", "version": "0.18.0" },
+                    { "name": "pdal", "version": "3.4.3" },
+                    { "name": "rasterio", "version": "1.3.9" },
+                    { "name": "xarray", "version": "2023.12.0" },
+                    { "name": "pyproj", "version": "3.6.1" },
+                    { "name": "boto3", "version": "1.34.34" },
+                    { "name": "Pillow", "version": "10.2.0" },
+                    { "name": "requests", "version": "2.31.0" },
+                    { "name": "lxml", "version": "4.9.4" }
                 ],
                 "hardwareRequirements": {
                     "cpu": "2000m",

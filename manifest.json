@@ -1,0 +1,99 @@
+{
+    "name": "EO-Point-Cloud",
+    "description": "Generation of 3D Point Cloud from Earth Observation Data, including Elevation Models (DEM) and Sentinel-2 imagery. The model provides a seamlessly integration for downloading S2 and DEM data and returns a Point Cloud file (.ply) as well the mesh (.glb)",
+    "license": {
+        "name": "LGPLv3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.txt",
+        "description": "",
+        "copyrights": [
+            {
+                "years": [
+                    2025
+                ],
+                "company": "European Space Agency"
+            }
+        ]
+    },
+    "owner": "Emanuel.Goulart, Sebastien.Tetault",
+    "inputs": {
+        "cdse_key": {
+            "type": "string",
+            "description": "CDSE ACCESS_KEY_ID"
+        },
+        "cdse_secret": {
+            "type": "string",
+            "description": "CDSE SECRET ACCESS KEY"
+        },
+        "earth_data_hub_key":{
+            "type": "string",
+            "description": "API key from Earth Data Hub"
+        },
+        "bbox": {
+            "type": "string",
+            "description": "Comma-separated string of coordinates -> 'min_lon,min_lat,max_lon,max_lat' (e.g:'3.2833,45.3833,11.2,50.1833') "
+        },
+        "sampled_fraction": {
+            "type": "numerical",
+            "description": "The fraction of the point cloud the be sampled in order to reduce computational resources. Default=0.2"
+        }
+    },
+    "outputs": {
+        "point_cloud": {
+            "type": "Data",
+            "description": "A point cloud file (.pcl) ready to open it on OPEN3D."
+        },
+        "mesh":{
+            "type": "Data",
+            "description": "The mesh data of the point cloud (.glb)"
+        }
+    },
+    "models": {
+        "point_cloud_generator": {
+            "path": "models",
+            "type": "python",
+            "parameters": {
+                "pythonVersion": "3.12.2",
+                "pipRequirements": [
+                { "name": "numpy", "version": "1.26.4" },
+                { "name": "pandas", "version": "2.2.3" },
+                { "name": "pystac-client", "version": "0.8.6" },
+                { "name": "dotenv", "version": "0.9.9" },
+                { "name": "loguru", "version": "0.7.3" },
+                { "name": "PyYAML", "version": "6.0.1" }
+                ],
+                "hardwareRequirements": {
+                    "cpu": "2000m",
+                    "ram": "3Gi"
+                },
+                "command": "python main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+            },
+            "inputs": {
+                "cdse_key":{
+                    "type":"string"
+                },
+                "cdse_secret":{
+                    "type": "string"
+                },
+                "earth_data_hub_key":{
+                    "type": "string"
+                },
+                "bbox": {
+                    "type": "string"
+                },
+                "sampled_fraction": {
+                    "type": "numerical"
+                }
+            },
+            "outputs": {
+                "point_cloud": {
+                    "type": "Data",
+                    "glob": "point_cloud.ply"
+                },
+                "mesh":{
+                    "type": "Data",
+                    "glob": "mesh.glb"
+                }
+            }
+        }
+    }
+}

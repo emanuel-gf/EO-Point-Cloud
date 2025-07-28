@@ -1,0 +1,22 @@
+{
+  "cdse_key": {
+      "type": "string",
+      "value": ""
+  },
+  "cdse_secret": {
+      "type": "string",
+      "value": ""
+  },
+  "earth_data_hub_key":{
+    "type": "string",
+    "value": ""
+  },
+  "bbox":{
+      "type":"string",
+      "value": "4.0,35.0,5.0,36.0"
+  },
+  "fraction_sampled":{
+    "type": "numerical",
+    "value": 0.2 
+ }
+}

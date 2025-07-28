@@ -85,11 +85,11 @@
                 }
             },
             "outputs": {
-                "point_cloud": {
+                "out_point_cloud": {
                     "type": "Data",
                     "glob": "point_cloud.ply"
                 },
-                "mesh":{
+                "out_mesh":{
                     "type": "Data",
                     "glob": "mesh.glb"
                 }

@@ -34,9 +34,7 @@ pcddeltatwin/
 
 ```
 
-## Notebooks
-
-### Basic Part 1: DEM Visualization
+## Main Description 
 
 The Source code do:
 - Access Copernicus DEM data from the Earth Data Hub

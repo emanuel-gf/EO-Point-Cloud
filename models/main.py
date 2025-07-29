@@ -150,7 +150,7 @@ def main() -> None:
     dir_path = os.getcwd()
     logger.info(f"Current working directory: {dir_path}")
 
-    query_cfg = load_config(f"{dir_path}/models/query_config.yml")
+    query_cfg = load_config(f"{dir_path}/src/query_config.yml")
 
     ## Access STAC API
     stac_url = query_cfg["endpoint_stac"]

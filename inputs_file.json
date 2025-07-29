@@ -13,7 +13,7 @@
   },
   "bbox":{
       "type":"string",
-      "value": "9.05,39.0,9.79,39.5" //min_lat, min_lon, max_lat, max_long
+      "value": "9.05,39.0,9.79,39.5" 
   }, 
   "fraction_sampled":{
     "type": "numerical",

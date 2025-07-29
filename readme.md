@@ -7,33 +7,31 @@ This repository contains a collection of Jupyter notebooks and utilities for gen
 
 ## Overview
 
-The project demonstrates various techniques for processing and visualizing geospatial data in 3D, with a focus on:
+The project demonstrates how to download and create a point cloud data file with Earth Observation data.
 
 1. Accessing and visualizing DEM data from the DestinE Earth Data Hub (https://earthdatahub.destine.eu/getting-started)
 2. Combining DEM data with Sentinel-2 imagery to create colorized 3D point clouds
-3. Processing IGN HD LiDAR data for high-resolution terrain modeling
-4. Integrating multiple data sources (DEM, Sentinel-2, and LiDAR) for comprehensive 3D models
+4. Integrating multiple data sources (DEM, Sentinel-2) for comprehensive 3D models
 
 ## Repository Structure
 
 ```bash
-├── LICENSE
-├── README.md
-├── notebooks
-│   ├── basic_part_1.ipynb          # Basic DEM visualization
-│   ├── basic_part_2.ipynb          # Point cloud generation from DEM and Sentinel-2
-│   ├── basic_part_3.py.py          # IGN HD LiDAR processing
-│   ├── intermediate_part_1.ipynb   # Integration of multiple data sources
-└── src
-    ├── data                        # Data storage directory
-    │   ├── grille.zip
-    │   ├── ign/
-    │   └── sentinel2/
-    │       └── T32TLR_20241030T103151_TCI_20m.jp2
-    ├── point_cloud_generator.py
-    └── util/                       # Utility functions
-        ├── file_downloader.py      # Utility to download files
-        └── general.py              # Common processing functions
+pcddeltatwin/
+├─ models/  ## Model that runs inside DeltaTwin
+│  ├─ src/
+│  │  ├─ __init__.py
+│  │  ├─ query_config.yml
+│  │  ├─ s3_bucket.py
+│  │  ├─ stac.py
+│  │  └─ utils.py #Utility functions
+│  └─ main.py 
+├─ inputs_file.json
+├─ install_packages.sh
+├─ manifest.json ## Describes how the DeltaTwin component should be organized
+├─ readme.md
+├─ requirements.txt
+└─ workflow.yml ## Structure nodes and edges of the component 
+
 ```
 
 ## Notebooks
@@ -61,7 +59,7 @@ The repository includes several utility classes to streamline data processing:
 1. Clone this repository
 
 ```bash
-git 
+git clone https://github.com/emanuel-gf/EO-Point-Cloud.git
 ```
 2. Install the required dependencies
 
@@ -87,8 +85,8 @@ Apache License 2.0
 
 ## Acknowledgments
 
- The majority part of the handler classes were developt by Sebastien Tetauld. 
- - [Sebastien Tetauld](https://github.com/sebastien-tetaud)
+ The majority part of the classes for creation and handling PointClouds were developt by Sebastien Tetauld. 
+- [Sebastien Tetauld](https://github.com/sebastien-tetaud)
 - [Copernicus DEM](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model)
 - [Sentinel-2](https://sentinel.esa.int/web/sentinel/missions/sentinel-2)
 - [DestinE Earth Data Hub](https://earthdatahub.destine.eu/)

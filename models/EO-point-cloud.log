@@ -36,3 +36,6 @@
 2025-07-29 08:11:32.243 | INFO     | src.utils:downsample:416 - Point cloud downsampled with sample fraction 0.8
 2025-07-29 08:11:32.244 | INFO     | __main__:main:219 - Points downsampled by 0.8
 2025-07-29 08:11:32.244 | INFO     | __main__:main:222 - Handling Open3D point cloud creation
+2025-07-29 08:15:22.050 | SUCCESS  | __main__:main:229 - Point cloud saved at: ./point_cloud.py
+2025-07-29 08:15:22.163 | SUCCESS  | __main__:main:232 - Mesh saved at: ./mesh.glb
+2025-07-29 08:15:22.163 | SUCCESS  | __main__:main:234 - Completely Sucesfully 

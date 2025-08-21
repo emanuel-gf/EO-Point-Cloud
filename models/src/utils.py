@@ -27,14 +27,37 @@ Modified by: Emanuel Goulart
 Date: 2025-03-14
 License: Apache 2.0
 """
-import json
+import os
 
+def setup_headless_environment():
+    """Setup headless environment variables before any graphics imports"""
+    os.environ['DISPLAY'] = ':99'  # Use virtual display
+    os.environ['EGL_PLATFORM'] = 'surfaceless'
+    os.environ['OPEN3D_CPU_RENDERING'] = '1'
+    os.environ['PYOPENGL_PLATFORM'] = 'egl'
+    os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
+    os.environ['GALLIUM_DRIVER'] = 'llvmpipe'  # Software renderer
+    
+    # Suppress GUI warnings
+    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+    os.environ['MPLBACKEND'] = 'Agg'
+
+# force headless operation 
+setup_headless_environment()
+
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+
+import matplotlib.pyplot as plt 
+import sys
+import json
 import cv2 as cv
-import matplotlib.pyplot as plt
+
+
 import numpy as np
-import open3d as o3d
+##import open3d as o3d
 import pandas as pd
-import pdal
+#import pdal
 import rasterio
 import xarray as xr
 from pyproj import Transformer
@@ -44,6 +67,136 @@ import os
 import subprocess
 from loguru import logger
 import yaml  
+import subprocess
+
+
+def setup_open3d():
+    """Setup Open3D with comprehensive headless support and error handling"""
+    
+    # Ensure virtual display is available
+    def start_virtual_display():
+        """Start Xvfb virtual display if not already running"""
+        try:
+            # Check if display is already available
+            result = subprocess.run(['xdpyinfo', '-display', ':99'], 
+                                  capture_output=True, stderr=subprocess.DEVNULL)
+            if result.returncode == 0:
+                logger.info("Virtual display :99 is already running")
+                return True
+        except:
+            pass
+        
+        try:
+            # Start Xvfb virtual display
+            subprocess.Popen([
+                'Xvfb', ':99', 
+                '-screen', '0', '1024x768x24',
+                '-ac', '+extension', 'GLX', '+render', '-noreset'
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            
+            # Wait a moment for Xvfb to start
+            import time
+            time.sleep(2)
+            logger.success("Virtual display :99 started successfully")
+            return True
+        except Exception as e:
+            logger.warning(f"Could not start virtual display: {e}")
+            return False
+    
+    # Start virtual display
+    start_virtual_display()
+    
+    try:
+        # Try importing Open3D with headless configuration
+        logger.info("Attempting to import Open3D...")
+        import open3d as o3d
+        
+        # Configure Open3D for headless operation
+        try:
+            # Set Open3D to use CPU rendering
+            o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
+            logger.info("Open3D verbosity set to Error level")
+        except:
+            pass
+        
+        # Test basic Open3D functionality
+        try:
+            test_pcd = o3d.geometry.PointCloud()
+            test_points = np.random.rand(100, 3)
+            test_pcd.points = o3d.utility.Vector3dVector(test_points)
+            logger.success("✅ Open3D basic functionality test passed")
+        except Exception as test_error:
+            logger.warning(f"Open3D basic test failed: {test_error}")
+        
+        logger.success("✅ Open3D imported and configured successfully for headless operation")
+        return o3d
+        
+    except OSError as e:
+        error_msg = str(e)
+        logger.error(f"OSError importing Open3D: {error_msg}")
+        
+        if "libX11" in error_msg:
+            logger.error("❌ X11 library issue detected - this should not happen with runtime installation")
+            logger.info("Make sure your container startup command includes X11 library installation")
+            
+        elif "libGL" in error_msg:
+            logger.error("❌ OpenGL library issue detected")
+            logger.info("Trying to use software rendering...")
+            
+            # Try with software rendering
+            os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
+            os.environ['MESA_GL_VERSION_OVERRIDE'] = '3.3'
+            
+            try:
+                import open3d as o3d
+                logger.success("✅ Open3D imported with software rendering")
+                return o3d
+            except Exception as sw_error:
+                logger.error(f"Software rendering also failed: {sw_error}")
+        
+        # Final fallback attempt
+        logger.info("Attempting fallback import...")
+        raise ImportError(f"Open3D failed to import: {error_msg}")
+    
+    except ImportError as e:
+        logger.error(f"ImportError: {e}")
+        
+        # Try installing open3d-cpu as alternative
+        try:
+            logger.info("Attempting to install open3d-cpu as fallback...")
+            subprocess.run([
+                sys.executable, "-m", "pip", "install", 
+                "--force-reinstall", "--no-deps", "open3d-cpu"
+            ], check=True, capture_output=True)
+            
+            import open3d as o3d
+            logger.success("✅ Open3D CPU version imported successfully")
+            return o3d
+            
+        except Exception as fallback_error:
+            logger.error(f"❌ All Open3D installation methods failed: {fallback_error}")
+            raise ImportError(f"Could not import Open3D after all attempts: {e}")
+    
+    except Exception as e:
+        logger.error(f"❌ Unexpected error setting up Open3D: {e}")
+        raise
+
+# Global Open3D instance
+try:
+    logger.info("Setting up Open3D...")
+    o3d = setup_open3d()
+    logger.success("🎉 Open3D setup completed successfully!")
+except Exception as e:
+    logger.error(f"💥 Failed to setup Open3D: {e}")
+    logger.error("This will prevent point cloud processing functionality")
+    raise
+
+# Use this instead of direct import
+try:
+    o3d = setup_open3d()
+except Exception as e:
+    logger.error(f"Failed to setup Open3D: {e}")
+    raise
 
 def load_config(config_path: str = "cfg/config.yaml") -> dict:
     """
@@ -202,151 +355,6 @@ class Sentinel2Reader:
             plt.show()
         else:
             print("No image data loaded.")
-
-
-class IGNLidarProcessor:
-    """
-    A class to process LiDAR point cloud data from IGN.
-
-    Attributes:
-        input_file (str): Path to the input LiDAR file.
-        df (pd.DataFrame): DataFrame to store the point cloud data.
-    """
-
-    def __init__(self, input_file: str):
-        """
-        Initialize the IGNLidarProcessor with the input file path.
-
-        Args:
-            input_file (str): Path to the input LiDAR file.
-        """
-        self.input_file = input_file
-        self.df = None
-
-    def read_point_cloud(self):
-        """
-        Read the point cloud data from the input file using PDAL.
-
-        Raises:
-            Exception: If there is an error in reading the file.
-        """
-        # Define a PDAL pipeline to read the file
-        pipeline = {
-            "pipeline": [
-                {
-                    "type": "readers.las",
-                    "filename": self.input_file
-                }
-            ]
-        }
-        # Convert the pipeline to JSON format
-        pipeline_json = json.dumps(pipeline)
-        # Initialize the PDAL pipeline
-        p = pdal.Pipeline(pipeline_json)
-        # Execute the pipeline
-        _ = p.execute()
-        # Extract the point cloud data
-        pcd = p.arrays
-        self.df = pd.DataFrame(pcd[0])
-
-    def transform_coordinates(self, src_crs: str = "epsg:2154", dst_crs: str = "epsg:32632"):
-        """
-        Transform the coordinates from the source CRS to the destination CRS.
-
-        Args:
-            src_crs (str): Source coordinate reference system. Default is "epsg:2154".
-            dst_crs (str): Destination coordinate reference system. Default is "epsg:32632".
-
-        Raises:
-            ValueError: If the point cloud data has not been read yet.
-        """
-        if self.df is None:
-            raise ValueError("Point cloud data has not been read yet.")
-
-        # Initialize the transformer
-        transformer = Transformer.from_crs(src_crs, dst_crs, always_xy=True)
-        # Convert X, Y coordinates
-        utm_easting, utm_northing = transformer.transform(self.df["X"].values,
-                                                          self.df["Y"].values)
-        # Add transformed coordinates to DataFrame
-        self.df["UTM_Easting"] = utm_easting
-        self.df["UTM_Northing"] = utm_northing
-
-        self.df = pd.DataFrame(data={
-            "x": self.df["UTM_Easting"],
-            "y": self.df["UTM_Northing"],
-            "z": self.df["Z"],
-            'classification': self.df["Classification"]
-        })
-
-    def downsample(self, sample_fraction=0.1, random_state=42):
-        """
-        Downsample the point cloud by randomly sampling a fraction of the points.
-
-        Args:
-            sample_fraction (float): The fraction of points to sample. Default is 0.1.
-            random_state (int): Seed for the random number generator. Default is 42.
-        """
-        if self.df is None:
-            raise ValueError("Point cloud data not generated. Run `generate_point_cloud()` first.")
-
-        # Perform random sampling
-        self.df = self.df.sample(frac=sample_fraction, random_state=random_state)
-        print(f"Point cloud downsampled with sample fraction {sample_fraction}")
-
-    def classes_filtering(self, list_classes=[9, 6]):
-        """
-        Filter the point cloud data based on specified classification values.
-
-        Args:
-            list_classes (list): List of classification values to keep. Default is [9, 6].
-        """
-        if self.df is None:
-            raise ValueError("Point cloud data has not been read yet.")
-
-        self.df = self.df[self.df['classification'].isin(list_classes)]
-
-    def generate_color(self):
-        """
-        Generate unique colors for each classification in the point cloud data.
-
-        Returns:
-            dict: A dictionary mapping classification values to RGB colors.
-
-        Raises:
-            ValueError: If the point cloud data has not been read yet.
-        """
-        if self.df is None:
-            raise ValueError("Point cloud data has not been read yet.")
-
-        # Get unique classification values
-        unique_classes = self.df["classification"].unique()
-        num_classes = len(unique_classes)
-        cmap = plt.cm.get_cmap("tab10", num_classes)  # Choose a colormap with enough distinct colors
-        class_colors = {cls: tuple((np.array(cmap(i)[:3]) * 255).astype(int)) for i, cls in enumerate(unique_classes)}
-        self.df["color"] = self.df["classification"].map(class_colors)
-
-    def assign_custom_colors(self):
-        """
-        Assign custom colors for specific classification categories.
-        """
-        if self.df is None:
-            raise ValueError("Point cloud data has not been read yet.")
-
-        color_mapping = {
-            1: (200, 200, 200),   # Non classé (Gray)
-            2: (139, 69, 19),     # Sol (Brown)
-            3: (34, 139, 34),     # Végétation basse (Green)
-            4: (0, 100, 0),       # Végétation moyenne (Dark Green)
-            5: (0, 50, 0),        # Végétation haute (Darker Green)
-            6: (255, 0, 0),       # Bâtiment (Red)
-            66: (255, 20, 147)    # Points virtuels (Pink)
-        }
-
-        self.df["color"] = self.df["classification"].map(lambda x: np.array(color_mapping.get(x, (0, 0, 0)), dtype=np.int64))
-        self.df["color"] = self.df["color"].apply(
-            lambda x: np.array(x[:3]) if isinstance(x, (list, tuple, np.ndarray)) and len(x) >= 3 else np.array([0, 0, 0])
-        )
 
 
 class PcdGenerator:
@@ -508,12 +516,7 @@ class PointCloudHandler:
         o3d.io.write_triangle_mesh(filename, self.mesh)
         print(f"Mesh saved to {filename} (GLB format).")
 
-    def visualize(self):
-        """Visualize the point cloud using Open3D."""
-        if self.point_cloud is None:
-            raise ValueError("Point cloud not generated yet.")
 
-        o3d.visualization.draw_geometries([self.point_cloud])
 
 
 class PcdFilter:

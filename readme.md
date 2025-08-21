@@ -2,7 +2,6 @@
 
 This repository contains a streaming of Earth Observation (EO) data for creating Point Cloud and 3D visualizations. The repository is focused on the implementation of a Delta Twin component. [Delta Twin](https://deltatwin.destine.eu/) is a project that belongs to [Destionation Earth](https://destination-earth.eu/) initiative. It allows modeling activities of digital twins and aims to offer a collaborative environment for building and running multi-scale and composable workflows.
 
-This repository is
 This repository contains a collection of Jupyter notebooks and utilities for generating 3D point clouds from Earth Observation (EO) data, including Digital Elevation Models (DEM), Sentinel-2 imagery, and LiDAR data.
 
 ## Overview

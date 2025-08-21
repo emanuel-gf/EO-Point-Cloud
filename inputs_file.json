@@ -1,22 +1,22 @@
 {
   "cdse_key": {
       "type": "string",
-      "value": ""
+      "value": "2EZ52XUQGE76QUDQWP2I"
   },
   "cdse_secret": {
       "type": "string",
-      "value": ""
+      "value": "5QhCzEV7YqnznzDrFtiHANkhmSeimySgqhUg8PlA"
   },
   "earth_data_hub_key":{
     "type": "string",
-    "value": ""
+    "value": "edh_pat_e8f324182ecf92cb9e00c84c4c80fa67439e1d0ccc2aa6edaaf38bd7a6d7f91f81bab67c954cffdaea3c36673984db69"
   },
   "bbox":{
       "type":"string",
-      "value": "9.05,39.0,9.79,39.5" 
+      "value": "7.67807,45.866106,8.00354,45.994099" 
   }, 
-  "fraction_sampled":{
-    "type": "numerical",
-    "value": 0.2
+  "sampled_fraction":{
+    "type": "number",
+    "value": 0.20
  }
 }

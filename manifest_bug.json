@@ -45,7 +45,19 @@
             "parameters": {
                 "pythonVersion": "3.12.2",
                 "baseImage": "python:3.12.2-slim-bookworm",
-                "aptRequirements": [],
+                "aptRequirements": [{ "name": "gdal-bin", "version": "3.6.4+dfsg-1build4" },
+                                    { "name": "libgdal-dev", "version": "3.6.4+dfsg-1build4" },
+                                    { "name": "libx11-6", "version": "2:1.8.7-1build1" },
+                                    { "name": "libx11-dev", "version": "2:1.8.7-1build1" },
+                                    { "name": "libx11-xcb1", "version": "2:1.8.7-1build1" },
+                                    { "name": "libxcb1", "version": "1.15-1ubuntu2" },
+                                    { "name": "libxrandr2", "version": "2:1.5.4-1build1" },
+                                    { "name": "libxinerama1", "version": "2:1.1.5-1build1" },
+                                    { "name": "libxcursor1", "version": "1:1.2.2-1build1" },
+                                    { "name": "libxi6", "version": "2:1.8.1-1build1" },
+                                    { "name": "libgl1-mesa-glx", "version": "24.0.9-0ubuntu0.1" },
+                                    { "name": "libegl1-mesa", "version": "24.0.9-0ubuntu0.1" }
+                ],
                 "pipRequirements": [
                             { "name": "aiohttp", "version": "3.9.5" },
                             {"name":"loguru","version":"0.7.3"},
@@ -68,7 +80,7 @@
                     "cpu": "3000m",
                     "ram": "4Gi"
                 },
-                "command": "apt-get update && apt-get install -y libx11-6 libx11-dev libx11-xcb1 libxcb1 libxrandr2 libxinerama1 libxcursor1 libxi6 libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 libegl-mesa0 xvfb gdal-bin libgdal-dev && python main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+                "command": "python main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
             },
             "inputs": {
                 "cdse_key":{

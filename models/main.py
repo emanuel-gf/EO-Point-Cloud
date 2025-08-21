@@ -1,10 +1,16 @@
 import os
+os.environ['DISPLAY'] = ''
+os.environ['EGL_PLATFORM'] = 'surfaceless'
+os.environ['PYOPENGL_PLATFORM'] = 'egl'
+
 from loguru import logger
 from typing import Dict, List, Union
 from dotenv import load_dotenv
 import pystac_client
 import sys
+import subprocess
 
+logger.info(f"{os.environ}")
 from src.utils import (PcdGenerator, PointCloudHandler, Sentinel2Reader,load_config,
                           load_dem_utm)
 from src.s3_bucket import S3Connector, extract_s3_path_from_url, get_product
@@ -223,13 +229,13 @@ def main() -> None:
     # # Process and save point cloud and mesh
     handler = PointCloudHandler(pcd_gen.df)
     handler.to_open3d()
-    handler.generate_mesh(depth=9)
+    #handler.generate_mesh(depth=7)
 
     handler.save_point_cloud("./point_cloud.ply")
     logger.success(f"Point cloud saved at: {"./point_cloud.py"}")
 
-    handler.save_mesh("./mesh.glb")
-    logger.success(f"Mesh saved at: {"./mesh.glb"}")
+    #handler.save_mesh("./mesh.glb")
+    #logger.success(f"Mesh saved at: {"./mesh.glb"}")
 
     logger.success("Completely Sucesfully ")
     

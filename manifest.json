@@ -28,7 +28,7 @@
             "description": "Comma-separated string of coordinates -> 'min_lon,min_lat,max_lon,max_lat'(left, bottom, right, top) (e.g:'3.2833,45.3833,11.2,50.1833') "
         },
         "sampled_fraction": {
-            "type": "number",
+            "type": "string",
             "description": "The fraction of the point cloud the be sampled in order to reduce computational resources. Default=0.2"
         }
     },
@@ -60,15 +60,20 @@
                             { "name": "rasterio", "version": "1.4.3" },
                             { "name": "pystac-client", "version": "0.9.0" },
                             {"name": "packaging", "version":"24.1"},
+                            {"name":"zarr", "version":"3.1.0"},
                             { "name": "xarray", "version": "2025.8.0"},
                             {"name": "open3d", "version":"0.19"},
-                            {"name": "python-dotenv", "version":"1.1.0"}
+                            {"name": "python-dotenv", "version":"1.1.0"},
+                            {"name": "boto3","version": "1.34.20"},
+                            {"name": "lxml",  "version": "5.3.1"},
+                            {"name":"fsspec", "version": "2025.5.1"},
+                            {"name":"dask", "version": "2025.5.1"}
                             ],
                 "hardwareRequirements": {
                     "cpu": "3000m",
                     "ram": "4Gi"
                 },
-                "command": "apt-get update && apt-get install -y libx11-6 libx11-dev libx11-xcb1 libxcb1 libxrandr2 libxinerama1 libxcursor1 libxi6 libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 libegl-mesa0 xvfb gdal-bin libgdal-dev && python main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+                "command": "apt-get update && apt-get install -y libx11-6 libx11-dev libx11-xcb1 libxcb1 libxrandr2 libxinerama1 libxcursor1 libxi6 libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 libegl-mesa0 xvfb gdal-bin libgdal-dev && export PYTHONUNBUFFERED=1 && python -u main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
             },
             "inputs": {
                 "cdse_key":{
@@ -84,7 +89,7 @@
                     "type": "string"
                 },
                 "sampled_fraction": {
-                    "type": "numerical"
+                    "type": "string"
                 }
             },
             "outputs": {

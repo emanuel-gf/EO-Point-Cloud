@@ -16,7 +16,7 @@
       "value": "7.67807,45.866106,8.00354,45.994099" 
   }, 
   "sampled_fraction":{
-    "type": "number",
-    "value": 0.20
+    "type": "string",
+    "value": "0.20"
  }
 }

@@ -1,12 +1,18 @@
-
 import os
 import sys
 import datetime
 import time
 
-# Set environment variables early
+# Set environment variables early for headless operation  
 os.environ['EGL_PLATFORM'] = 'surfaceless'
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
+os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
+os.environ['XDG_RUNTIME_DIR'] = '/tmp/runtime-xvfb'
+os.environ['MESA_LOADER_DRIVER_OVERRIDE'] = 'softpipe'
+
+# Create runtime directory if it doesn't exist
+import pathlib
+pathlib.Path('/tmp/runtime-xvfb').mkdir(exist_ok=True)
 
 from loguru import logger
 
@@ -134,8 +140,53 @@ def initialize_env(key_id: str, access_key: str, eh_token: str,
         logger.error(f"Failed to initialize environment: {e}")
         raise
 
+def test_open3d_basic():
+    """Test basic Open3D functionality to ensure it's working."""
+    logger.info("=== Testing Open3D Functionality (Pre-built Docker) ===")
+    
+    try:
+        import open3d as o3d
+        logger.info(f"✅ Open3D version {o3d.__version__} imported successfully")
+        
+        # Test basic geometry creation
+        mesh = o3d.geometry.TriangleMesh.create_box()
+        logger.info(f"✅ Basic geometry creation works - mesh has {len(mesh.vertices)} vertices")
+        
+        # Test point cloud conversion
+        pcd = mesh.sample_points_uniformly(100)
+        logger.info(f"✅ Point cloud operations work - generated {len(pcd.points)} points")
+        
+        # Test file I/O
+        test_file = "/tmp/test_mesh.ply"
+        o3d.io.write_triangle_mesh(test_file, mesh)
+        loaded_mesh = o3d.io.read_triangle_mesh(test_file)
+        logger.info(f"✅ File I/O works - saved and loaded mesh")
+        
+        # Try rendering (optional - won't fail if it doesn't work)
+        try:
+            import open3d.visualization.rendering as rendering
+            render = rendering.OffscreenRenderer(320, 240)
+            render.scene.add_geometry("mesh", mesh, rendering.MaterialRecord())
+            img = render.render_to_image()
+            o3d.io.write_image("/tmp/test_render.png", img)
+            logger.info("✅ Offscreen rendering works!")
+        except Exception as render_error:
+            logger.info(f"⚠️  Offscreen rendering not available: {render_error}")
+            logger.info("   This is normal - basic Open3D operations still work perfectly")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ Open3D basic test failed: {e}")
+        return False
+
 def main() -> None:
     logger.info("=== STARTING POINT CLOUD GENERATOR ===")
+
+    # Test Open3D first
+    if not test_open3d_basic():
+        logger.error("Open3D is not working properly - aborting")
+        sys.exit(1)
 
     # Parse arguments with better error handling
     try:

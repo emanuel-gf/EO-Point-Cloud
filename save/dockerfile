@@ -1,0 +1,65 @@
+FROM python:3.12.2-slim-bookworm
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:99
+ENV OPEN3D_CPU_RENDERING=1
+
+# Update package list and install system dependencies
+RUN apt-get update && apt-get install -y \
+    # X11 and OpenGL libraries
+    libx11-6 \
+    libx11-dev \
+    libx11-xcb1 \
+    libxcb1 \
+    libxrandr2 \
+    libxinerama1 \
+    libxcursor1 \
+    libxi6 \
+    libgl1 \
+    libglx-mesa0 \
+    libgl1-mesa-dri \
+    libegl1 \
+    libegl-mesa0 \
+    # Virtual framebuffer for headless operations
+    xvfb \
+    # GDAL and geospatial libraries
+    gdal-bin \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libgeotiff-dev \
+    # Additional utilities
+    curl \
+    wget \
+    build-essential \
+    pkg-config \
+    # Clean up
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install Python packages
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Set working directory
+WORKDIR /delta
+
+# Copy application code
+COPY . .
+
+# Create a script to start Xvfb and run the application
+RUN echo '#!/bin/bash\n\
+# Start Xvfb in background\n\
+Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &\n\
+# Wait a moment for Xvfb to start\n\
+sleep 2\n\
+# Run the main application\n\
+exec "$@"' > /start.sh && chmod +x /start.sh
+
+# Default command
+ENTRYPOINT ["/start.sh"]
+CMD ["python", "main.py"]

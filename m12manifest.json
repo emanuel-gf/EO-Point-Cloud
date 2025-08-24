@@ -44,7 +44,6 @@
             "type": "python",
             "parameters": {
                 "pythonVersion": "3.12.2",
-                "baseImage": "python:3.12.2-slim-bookworm",
                 "aptRequirements": [
                                 {
                                 "name": "gdal-bin",
@@ -53,75 +52,7 @@
                                 {
                                 "name": "libgdal-dev",
                                 "version": "3.6.2+dfsg-1+b2"
-                                },
-                                {
-                                    "name": "libx11-6",
-                                    "version": "2:1.8.12-1"
-                                },
-                                {
-                                    "name": "libx11-dev",
-                                    "version": "2:1.8.12-1"
-                                },
-                                {
-                                    "name": "libx11-xcb1",
-                                    "version": "2:1.8.12-1"
-                                },
-                                {
-                                    "name": "libxcb1",
-                                    "version": "1.17.0-2+b1"
-                                },
-                                {
-                                    "name": "libxrandr2",
-                                    "version": "2:1.5.4-1+b3"
-                                },
-                                {
-                                    "name": "libxinerama1",
-                                    "version": "2:1.1.4-3+b4"
-                                },
-                                {
-                                    "name": "libxcursor1",
-                                    "version": "1:1.2.3-1"
-                                },
-                                {
-                                    "name": "libxi6",
-                                    "version": "2:1.8.2-1"
-                                },
-                                {
-                                    "name": "libgl1",
-                                    "version": "1.7.0-1+b2"
-                                },
-                                {
-                                    "name": "libglx-mesa0",
-                                    "version": "25.0.7-2"
-                                },
-                                {
-                                    "name": "libgl1-mesa-dri",
-                                    "version": "25.0.7-2"
-                                },
-                                {
-                                    "name": "libegl1",
-                                    "version": "1.7.0-1+b2"
-                                },
-                                {
-                                    "name": "libegl-mesa0",
-                                    "version": "25.0.7-2"
-                                },
-                                {
-                                    "name": "xvfb",
-                                    "version": "2:21.1.16-1.3"
-                                },
-                                {
-                                        "name": "libgomp1",
-                                        "version":"15.2.0-1"
-                                    },
-                                    {
-                                        "name": "python3-pip",
-                                        "version": "25.1.1+dfsg-1"
-                                    },
-                                    {"name": "pkg-config",
-                                    "version":""},
-                                    {"name":"mesa-utils",
-                                    "version":""}
+                                }
                 ],
                 "pipRequirements": [
                             { "name": "aiohttp", "version": "3.9.5" },
@@ -150,8 +81,8 @@
                     "cpu": "4000m",
                     "ram": "7Gi"
                 },
-               "command": "apt-get update && apt-get install -y libx11-6 libx11-dev libx11-xcb1 libxcb1 libxrandr2 libxinerama1 libxcursor1 libxi6 libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 libegl-mesa0 xvfb gdal-bin libgdal-dev && echo 'APT INSTALL COMPLETED' && python -u main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
-             },
+                "command": "python mainpy.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+            },
             "inputs": {
                 "cdse_key":{
                     "type":"string"

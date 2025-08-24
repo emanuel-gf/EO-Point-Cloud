@@ -12,7 +12,7 @@ nodes:
   - id: point_cloud_generator
     ref: models.point_cloud_generator
   - id: output_point_cloud
-    ref: outputs.point_cloud
+    ref: outputs.out
 edges:
   - from:   
       id: cdse_key

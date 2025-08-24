@@ -29,21 +29,21 @@ License: Apache 2.0
 """
 import os
 
-def setup_headless_environment():
-    """Setup headless environment variables before any graphics imports"""
-    os.environ['DISPLAY'] = ':99'  # Use virtual display
-    os.environ['EGL_PLATFORM'] = 'surfaceless'
-    os.environ['OPEN3D_CPU_RENDERING'] = '1'
-    os.environ['PYOPENGL_PLATFORM'] = 'egl'
-    os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
-    os.environ['GALLIUM_DRIVER'] = 'llvmpipe'  # Software renderer
+# def setup_headless_environment():
+#     """Setup headless environment variables before any graphics imports"""
+#     os.environ['DISPLAY'] = ':99'  # Use virtual display
+#     os.environ['EGL_PLATFORM'] = 'surfaceless'
+#     os.environ['OPEN3D_CPU_RENDERING'] = '1'
+#     os.environ['PYOPENGL_PLATFORM'] = 'egl'
+#     os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
+#     os.environ['GALLIUM_DRIVER'] = 'llvmpipe'  # Software renderer
     
-    # Suppress GUI warnings
-    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
-    os.environ['MPLBACKEND'] = 'Agg'
+#     # Suppress GUI warnings
+#     os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+#     os.environ['MPLBACKEND'] = 'Agg'
 
-# force headless operation 
-setup_headless_environment()
+# # force headless operation 
+# setup_headless_environment()
 
 import matplotlib
 ##matplotlib.use('Agg')  # Use non-interactive backend
@@ -55,7 +55,7 @@ import cv2 as cv
 
 
 import numpy as np
-##import open3d as o3d
+import open3d as o3d
 import pandas as pd
 #import pdal
 import rasterio
@@ -70,120 +70,120 @@ import yaml
 import subprocess
 
 
-def setup_open3d():
-    """Setup Open3D with comprehensive headless support and error handling"""
+# def setup_open3d():
+#     """Setup Open3D with comprehensive headless support and error handling"""
     
-    # Ensure virtual display is available
-    def start_virtual_display():
-        """Start Xvfb virtual display if not already running"""
-        try:
-            # Check if display is already available
-            result = subprocess.run(['xdpyinfo', '-display', ':99'], 
-                                  capture_output=True, stderr=subprocess.DEVNULL)
-            if result.returncode == 0:
-                logger.info("Virtual display :99 is already running")
-                return True
-        except:
-            pass
+#     # Ensure virtual display is available
+#     def start_virtual_display():
+#         """Start Xvfb virtual display if not already running"""
+#         try:
+#             # Check if display is already available
+#             result = subprocess.run(['xdpyinfo', '-display', ':99'], 
+#                                   capture_output=True, stderr=subprocess.DEVNULL)
+#             if result.returncode == 0:
+#                 logger.info("Virtual display :99 is already running")
+#                 return True
+#         except:
+#             pass
         
-        try:
-            # Start Xvfb virtual display
-            subprocess.Popen([
-                'Xvfb', ':99', 
-                '-screen', '0', '1024x768x24',
-                '-ac', '+extension', 'GLX', '+render', '-noreset'
-            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+#         try:
+#             # Start Xvfb virtual display
+#             subprocess.Popen([
+#                 'Xvfb', ':99', 
+#                 '-screen', '0', '1024x768x24',
+#                 '-ac', '+extension', 'GLX', '+render', '-noreset'
+#             ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             
-            # Wait a moment for Xvfb to start
-            import time
-            time.sleep(2)
-            logger.success("Virtual display :99 started successfully")
-            return True
-        except Exception as e:
-            logger.warning(f"Could not start virtual display: {e}")
-            return False
+#             # Wait a moment for Xvfb to start
+#             import time
+#             time.sleep(2)
+#             logger.success("Virtual display :99 started successfully")
+#             return True
+#         except Exception as e:
+#             logger.warning(f"Could not start virtual display: {e}")
+#             return False
     
-    # Start virtual display
-    start_virtual_display()
+#     # Start virtual display
+#     start_virtual_display()
     
-    try:
-        # Try importing Open3D with headless configuration
-        logger.info("Attempting to import Open3D...")
-        import open3d as o3d
+#     try:
+#         # Try importing Open3D with headless configuration
+#         logger.info("Attempting to import Open3D...")
+#         import open3d as o3d
         
-        # Configure Open3D for headless operation
-        try:
-            # Set Open3D to use CPU rendering
-            o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
-            logger.info("Open3D verbosity set to Error level")
-        except:
-            pass
+#         # Configure Open3D for headless operation
+#         try:
+#             # Set Open3D to use CPU rendering
+#             o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
+#             logger.info("Open3D verbosity set to Error level")
+#         except:
+#             pass
         
-        # THIS WAS MISSING - Return the successfully imported o3d
-        return o3d
+#         # THIS WAS MISSING - Return the successfully imported o3d
+#         return o3d
         
-    except OSError as e:
-        error_msg = str(e)
-        logger.error(f"OSError importing Open3D: {error_msg}")
+#     except OSError as e:
+#         error_msg = str(e)
+#         logger.error(f"OSError importing Open3D: {error_msg}")
         
-        if "libX11" in error_msg:
-            logger.error("X11 library issue detected - this should not happen with runtime installation")
-            logger.info("Make sure your container startup command includes X11 library installation")
+#         if "libX11" in error_msg:
+#             logger.error("X11 library issue detected - this should not happen with runtime installation")
+#             logger.info("Make sure your container startup command includes X11 library installation")
             
-        elif "libGL" in error_msg:
-            logger.error("OpenGL library issue detected")
-            logger.info("Trying to use software rendering...")
+#         elif "libGL" in error_msg:
+#             logger.error("OpenGL library issue detected")
+#             logger.info("Trying to use software rendering...")
             
-            # Try with software rendering
-            os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
-            os.environ['MESA_GL_VERSION_OVERRIDE'] = '3.3'
+#             # Try with software rendering
+#             os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
+#             os.environ['MESA_GL_VERSION_OVERRIDE'] = '3.3'
             
-            try:
-                import open3d as o3d
-                logger.success("Open3D imported with software rendering")
-                return o3d
-            except Exception as sw_error:
-                logger.error(f"Software rendering also failed: {sw_error}")
+#             try:
+#                 import open3d as o3d
+#                 logger.success("Open3D imported with software rendering")
+#                 return o3d
+#             except Exception as sw_error:
+#                 logger.error(f"Software rendering also failed: {sw_error}")
         
-        # Final fallback attempt
-        logger.info("Attempting fallback import...")
-        raise ImportError(f"Open3D failed to import: {error_msg}")
+#         # Final fallback attempt
+#         logger.info("Attempting fallback import...")
+#         raise ImportError(f"Open3D failed to import: {error_msg}")
     
-    except ImportError as e:
-        logger.error(f"ImportError: {e}")
+#     except ImportError as e:
+#         logger.error(f"ImportError: {e}")
         
-        # Try installing open3d-cpu as alternative
-        try:
-            logger.info("Attempting to install open3d-cpu as fallback...")
-            subprocess.run([
-                sys.executable, "-m", "pip", "install", 
-                "--force-reinstall", "--no-deps", "open3d-cpu"
-            ], check=True, capture_output=True)
+#         # Try installing open3d-cpu as alternative
+#         try:
+#             logger.info("Attempting to install open3d-cpu as fallback...")
+#             subprocess.run([
+#                 sys.executable, "-m", "pip", "install", 
+#                 "--force-reinstall", "--no-deps", "open3d-cpu"
+#             ], check=True, capture_output=True)
             
-            import open3d as o3d
-            logger.success("Open3D CPU version imported successfully")
-            return o3d
+#             import open3d as o3d
+#             logger.success("Open3D CPU version imported successfully")
+#             return o3d
             
-        except Exception as fallback_error:
-            logger.error(f"All Open3D installation methods failed: {fallback_error}")
-            raise ImportError(f"Could not import Open3D after all attempts: {e}")
+#         except Exception as fallback_error:
+#             logger.error(f"All Open3D installation methods failed: {fallback_error}")
+#             raise ImportError(f"Could not import Open3D after all attempts: {e}")
     
-    except Exception as e:
-        logger.error(f"Unexpected error setting up Open3D: {e}")
-        raise
+#     except Exception as e:
+#         logger.error(f"Unexpected error setting up Open3D: {e}")
+#         raise
 
-# Global Open3D instance
-try:
-    logger.info("Setting up Open3D...")
-    o3d = setup_open3d()
-    logger.success("Open3D setup completed successfully!")
-except Exception as e:
-    logger.error(f"Failed to setup Open3D: {e}")
-    raise
+# # Global Open3D instance
+# try:
+#     logger.info("Setting up Open3D...")
+#     o3d = setup_open3d()
+#     logger.success("Open3D setup completed successfully!")
+# except Exception as e:
+#     logger.error(f"Failed to setup Open3D: {e}")
+#     raise
 
 
 
-def load_config(config_path: str = "cfg/config.yaml") -> dict:
+def load_config(config_path: str = "cfg/query_config.yaml") -> dict:
     """
     Load configuration from a YAML file.
 

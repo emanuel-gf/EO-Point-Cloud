@@ -1,6 +1,6 @@
 # EO Point Cloud Generation
 
-![fig-point-cloud](figs/tyrol2.jpg)
+![fig-point-cloud](figs/tyrol.jpg)
 
 This repository aims on the creation Earth Observation Point Cloud. The repository is mainly focus at the implementation of EO-PointCloud as a component into the [DeltaTwin](https://deltatwin.destine.eu/) service of [Destination Earth](https://platform.destine.eu/). [Delta Twin](https://deltatwin.destine.eu/) allows modeling activities of digital twins and aims to offer a collaborative environment for building and running multi-scale and composable workflows.
 

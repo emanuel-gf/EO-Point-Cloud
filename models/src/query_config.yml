@@ -1,7 +1,0 @@
-endpoint_url: 'https://eodata.dataspace.copernicus.eu'
-endpoint_stac: 'https://stac.dataspace.copernicus.eu/v1/'
-bucket_name: 'eodata'
-
-query:
-  max_items: 1000
-  max_cloud_cover: 20

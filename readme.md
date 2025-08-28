@@ -1,54 +1,52 @@
 # EO Point Cloud Generation
 
-This repository contains a streaming of Earth Observation (EO) data for creating Point Cloud and 3D visualizations. The repository is focused on the implementation of a Delta Twin component. [Delta Twin](https://deltatwin.destine.eu/) is a project that belongs to [Destionation Earth](https://destination-earth.eu/) initiative. It allows modeling activities of digital twins and aims to offer a collaborative environment for building and running multi-scale and composable workflows.
+This repository aims on the creation Earth Observation Point Cloud. The repository is mainly focus at the implementation of EO-PointCloud as a component into the [DeltaTwin](https://deltatwin.destine.eu/) service of [Destination Earth](https://platform.destine.eu/). [Delta Twin](https://deltatwin.destine.eu/) allows modeling activities of digital twins and aims to offer a collaborative environment for building and running multi-scale and composable workflows.
 
-This repository contains a collection of Jupyter notebooks and utilities for generating 3D point clouds from Earth Observation (EO) data, including Digital Elevation Models (DEM), Sentinel-2 imagery, and LiDAR data.
+This repository contains two implementation of the EO-PointCloud. One using OPEN3D as the core of PointCloud, and the other one is a workaround with plyfile library which is capable of being injected inside the Component of DeltaTwin. 
+
+![Point CLoud](figs/tyrol2.jpg)
 
 ## Overview
 
-The project demonstrates how to download and create a point cloud data file with Earth Observation data.
+The project demonstrates how to create a DeltaTwin component and generate a EO-PointCloud File.
 
-1. Accessing and visualizing DEM data from the DestinE Earth Data Hub (https://earthdatahub.destine.eu/getting-started)
-2. Combining DEM data with Sentinel-2 imagery to create colorized 3D point clouds
-4. Integrating multiple data sources (DEM, Sentinel-2) for comprehensive 3D models
+1. Access [DeltaTwin](/DeltaTwin/) and see the three mandatory files to create a component: 
+- [Manifest](/DeltaTwin/manifest.json)
+- [Workflow](/DeltaTwin/workflow.yml)
+- [Models](/DeltaTwin/models/)
 
-## Repository Structure
+In case of doubt and further explanation of how to build a DeltaTwin component, please refers to: [DeltaTwin Documentation](https://deltatwin.destine.eu/docs)
 
-```bash
-pcddeltatwin/
-├─ models/  ## Model that runs inside DeltaTwin
-│  ├─ src/
-│  │  ├─ __init__.py
-│  │  ├─ query_config.yml
-│  │  ├─ s3_bucket.py
-│  │  ├─ stac.py
-│  │  └─ utils.py #Utility functions
-│  └─ main.py 
-├─ inputs_file.json
-├─ install_packages.sh
-├─ manifest.json ## Describes how the DeltaTwin component should be organized
-├─ readme.md
-├─ requirements.txt
-└─ workflow.yml ## Structure nodes and edges of the component 
+2. The folder [EO-PointCloud](/EO-Point-Cloud/) holds the implementation of EO-PointCloud with OPEN3D. For a proper installation of OPEN3D please check the file: [install_packages](/initial_setup/install_packages.sh)
 
-```
 
-## Main Description 
+## Quick start
 
-The Source code do:
-- Access Copernicus DEM data from the Earth Data Hub
-- Access and Download it Sentinel-2 data using AWS S3 connectors.
-- Allows the selection of the region of interest through a bbox.
-- Retrieves the most recent image for a filtered cloud cover lesser than 20%. 
-- Create a point cloud ready to be visualized in Open3d.
+To install the correct environment, it is recomended to use Conda and Conda-Forge. 
+Please follow the steps given at [install_packages](/initial_setup/install_packages.sh)
 
-## Utility Functions
+## Getting Required API keys: 
 
-The repository includes several utility classes to streamline data processing:
+To run any model is necessary having:
+ - An account at [CDSE](https://dataspace.copernicus.eu/).
+ - An account at [Destination Earth]((https://platform.destine.eu/))  
 
-- `Sentinel2Reader`: For reading and preprocessing Sentinel-2 imagery
-- `PcdGenerator`: For creating point clouds from DEM and imagery data
-- `PointCloudHandler`: For manipulating and saving point clouds
+ ### CDSE API - Key and Secret 
+
+- [CDSE](https://dataspace.copernicus.eu/) key and secret. 
+This is related to fetching the Sentinel-2 images from CDSE ecosystem. 
+Creating an account and fetching data is free for any user!
+In case of problems finding the key and secret, check it here: [FAQ: key and secret](https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Overview/Authentication.html) 
+
+### Earth Data Hub
+- [Earth Data Hub](https://earthdatahub.destine.eu/) API-key. 
+This is service inside Destination Earth, by having an account with any user has already access to the Earth Data Hub service. 
+Get your API key at: 
+1 - Log in
+2 - Click in your username (upper-right corner)
+3 - Account Settings 
+4 - Add personal access token
+5 - Done! Save carefully this token and pass into the Earth_data_hub_api for the main.py 
 
 
 ## Getting Started
@@ -70,10 +68,100 @@ Run cli to install all the packages
 sh install_packages.sh
 ```
 
-3. Run the main.py at the root of the folder :
+3. Run the main.py either at the DeltaTwin folder or EO-PointCloud folder. :
 ```bash
 python main.py your_cdse_id your_cdse_access_key your_earth_data_hub_api_key bbox sampled_fraction
 ```
+
+[DeltaTwin](figs/eo-deltatwin.jpg)
+
+# How to create a DeltaTwin component 
+
+For a detailed explanation, see at: [DeltaTwin Doc](https://deltatwin.destine.eu/docs/introduction)
+
+### Deltatwin
+
+1. Install deltatwin
+```
+pip install deltatwin
+```
+2. Log in 
+```
+deltatwin login username password -a https://api.deltatwin.destine.eu/
+```
+3. Refresh token
+```
+deltatwin login
+```
+4. Goes to the Folder [Deltatwin](/DeltaTwin/), fill the [inputs_file](/DeltaTwin/inputs_file.json) and start by running locally
+```
+deltatwin run start_local -i inputs_file.json --debug 
+```
+If you get an error, it may be because the name in the manifest: "name": "eo-point-cloud-generator", should be unique! So you have to create your own name.
+
+5. Push the Component to the Cloud and the Web-UI
+```
+deltatwin component publish -t whatever-tag 0.0.1 
+```
+
+[DeltaTwin](figs/eo-workflow.jpg)
+
+## Repository Structure
+
+```bash
+pcddeltatwin/
+├─ DeltaTwin/  ## DELTATWIN COMPONENT OF EO-POINTCLOUD
+│  ├─ models/
+│  │  ├─ find_bug.ipynb
+│  │  └─ main.py
+│  ├─ inputs_file.json
+│  ├─ manifest.json
+│  └─ workflow.yml
+├─ EO-Point-Cloud/  ##EO-POINTCLOUD 
+│  ├─ src/
+│  │  ├─ query_config.yml
+│  │  ├─ s3_bucket.py
+│  │  ├─ stac.py
+│  │  ├─ utils_no2.py
+│  │  └─ utils.py
+│  ├─ debug_.py
+│  ├─ main.py
+│  ├─ test_apt_requirements.py
+│  └─ tryer.py
+├─ initial_setup/
+│  └─ install_packages.sh  ## Information on how to properly install OPEN3D and all libraries of EO-PointCloud generation
+├─ notebooks/
+│  └─ draw_bbox.ipynb ## Quick way to create a bbox and get its boundaries to pass inside the EO-PointCloud arguments
+├─ save/
+│  ├─ dockerfile  ##Docker with OPEN3D
+│  ├─ manifest_bug.json ## Save copy of manifest to workaround with likely bug regarding DeltaTwin and OPEN3D
+│  ├─ manifest_test2.json ## Save copy
+│  ├─ requirements.txt
+│  ├─ t-requirements.txt
+├  ├─ copy_manifest.json ## same copy
+├  ├─ dockerfile.open3d 
+│  └─ test.ipynb  ## Run tests on STAC Catalogue
+├─ .gitignore
+├─ LICENSE
+├─ manifest.json
+├─ readme.md
+├─ requirements.txt
+```
+
+## Main.py
+You can run any main.py in your environment to test it before trying out the DeltaTwin. 
+Any file [main.py](/DeltaTwin/models/main.py) requires 5 inputs to run.
+```
+main.py -your_cdse_key -your_cdse_secret -your_earth_hub_api_key -bbox -sample_fraction
+```
+
+## Utility Functions 
+
+The repository includes several utility classes to streamline data processing:
+
+- `Sentinel2Reader`: For reading and preprocessing Sentinel-2 imagery
+- `PcdGenerator`: For creating point clouds from DEM and imagery data
+- `PointCloudHandler`: For manipulating and saving point clouds
 
 
 ## License
@@ -81,7 +169,7 @@ python main.py your_cdse_id your_cdse_access_key your_earth_data_hub_api_key bbo
 Apache License 2.0
 
 ## Acknowledgments
-
+This dataset is a personal project developed during my internship under Destination Earth initiative within [ESA](https://www.esa.int/). 
  The majority part of the classes for creation and handling PointClouds were developt by Sebastien Tetauld. 
 - [Sebastien Tetauld](https://github.com/sebastien-tetaud)
 - [Copernicus DEM](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model)

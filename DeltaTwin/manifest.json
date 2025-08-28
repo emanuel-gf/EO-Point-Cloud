@@ -1,0 +1,101 @@
+{
+    "name": "eo-point-cloud",
+    "description": "The current component is an Earth Observation (EO) Point Cloud generator. It retrieves data from Sentinel-2 and a Digital Elevation Model (DEM) to overlay both raster datasets, converting each pixel into a point within a 3D scene. The RGB color values from each pixel are assigned to the corresponding point, generating a point cloud data file (.ply). To access the data, you need valid CDSE credentials (key and secret) as well as an Earth Hub Data key within the DestinE services. Once you have the required keys, simply provide a bounding box (bbox) for your area of interest and specify a sampling fraction to reduce the size of the resulting point cloud (default is 0.2).",
+    "license": {
+        "name": "LGPLv3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.txt",
+        "description": "",
+        "copyrights": [
+            {"years": [2025],"company": "European Space Agency"}
+        ]
+    },
+    "owner": "Emanuel.Goulart, Sebastien.Tetault",
+    "inputs": {
+        "cdse_key": {
+            "type": "secret",
+            "description": "CDSE: ACCESS_KEY_ID"
+        },
+        "cdse_secret": {
+            "type": "secret",
+            "description": "CDSE: SECRET_ACCESS_KEY"
+        },
+        "earth_data_hub_key":{
+            "type": "secret",
+            "description": "Earth Data Hub: API_Key"
+        },
+        "bbox": {
+            "type": "string",
+            "description": "Comma-separated coordinates representing: 'min_lon,min_lat,max_lon,max_lat'. (left, bottom, right, top). e.g: 3.2833,45.3833,11.2,50.1833 "
+        },
+        "sampled_fraction": {
+            "type": "string",
+            "description": "The fraction of the point cloud the be sampled in order to reduce computational resources. Default=0.2"
+        }
+    },
+    "outputs": {
+        "out": {
+            "type": "Data",
+            "description": "A point cloud file (.ply)"
+        }
+    },
+    "models": {
+        "point_cloud_generator": {
+            "path": "models",
+            "type": "python",
+            "parameters": {
+                "pythonVersion": "3.12.2",
+                "pipRequirements": [
+                            { "name": "aiohttp", "version": "3.9.5" },
+                            {"name":"loguru","version":"0.7.3"},
+                            { "name": "cartopy", "version": "0.24.1" },
+                            { "name": "folium", "version": "0.19.5" },
+                            { "name": "geopandas", "version": "1.0.1" },
+                            { "name": "ipykernel", "version": "6.29.5" },
+                            { "name": "matplotlib", "version": "3.10.1" },
+                            { "name": "numpy", "version": "2.0" },
+                            { "name": "opencv-python-headless", "version": "4.11.0.86" },
+                            { "name": "pandas", "version": "2.2.3" },
+                            { "name": "rasterio", "version": "1.4.3" },
+                            { "name": "pystac-client", "version": "0.9.0" },
+                            {"name": "packaging", "version":"24.1"},
+                            {"name":"zarr", "version":"3.1.0"},
+                            { "name": "xarray", "version": "2025.8.0"},
+                            {"name": "python-dotenv", "version":"1.1.0"},
+                            {"name": "boto3","version": "1.34.20"},
+                            {"name": "lxml",  "version": "5.3.1"},
+                            {"name":"fsspec", "version": "2025.5.1"},
+                            {"name":"dask", "version": "2025.5.1"},
+                            {"name": "plyfile", "version":"1.1.2"}
+                            ],
+                "hardwareRequirements": {
+                    "cpu": "4000m",
+                    "ram": "9Gi"
+                },
+               "command": "python main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+             },
+            "inputs": {
+                "cdse_key":{
+                    "type":"string"
+                },
+                "cdse_secret":{
+                    "type": "string"
+                },
+                "earth_data_hub_key":{
+                    "type": "string"
+                },
+                "bbox": {
+                    "type": "string"
+                },
+                "sampled_fraction": {
+                    "type": "string"
+                }
+            },
+            "outputs": {
+                "out_point_cloud": {
+                    "type": "Data",
+                    "glob": "point_cloud.ply"
+                }
+            }
+        }
+    }
+}

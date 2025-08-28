@@ -1,0 +1,33 @@
+FROM python:3.11-slim
+
+# Set environment variables for headless rendering
+ENV DEBIAN_FRONTEND=noninteractive
+ENV EGL_PLATFORM=surfaceless
+ENV LIBGL_ALWAYS_SOFTWARE=1
+ENV MESA_GL_VERSION_OVERRIDE=3.3
+ENV XDG_RUNTIME_DIR=/tmp/runtime-xvfb
+ENV MESA_LOADER_DRIVER_OVERRIDE=softpipe
+
+# Install all system dependencies we've identified
+RUN apt-get update && apt-get install -y \
+    gdal-bin libgdal-dev \
+    libegl1-mesa libgl1-mesa-glx libglu1-mesa \
+    libgomp1 libx11-6 libxext6 libxrender1 \
+    libxtst6 libxi6 libxrandr2 xvfb mesa-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create runtime directory
+RUN mkdir -p /tmp/runtime-xvfb && chmod 700 /tmp/runtime-xvfb
+
+# Install Python packages (including Open3D)
+RUN pip install --no-cache-dir \
+    open3d==0.19.0 \
+    rasterio==1.3.9 \
+    matplotlib==3.8.3 \
+    numpy
+
+# Test that Open3D can be imported (basic test)
+RUN python -c "import open3d as o3d; print(f'✅ Open3D {o3d.__version__} installed successfully')"
+
+WORKDIR /app
+CMD ["python"]

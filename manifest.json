@@ -150,7 +150,7 @@
                     "cpu": "4000m",
                     "ram": "7Gi"
                 },
-               "command": "apt-get update && apt-get install -y libx11-6 libx11-dev libx11-xcb1 libxcb1 libxrandr2 libxinerama1 libxcursor1 libxi6 libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 libegl-mesa0 xvfb gdal-bin libgdal-dev && echo 'APT INSTALL COMPLETED' && python -u main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
+               "command": "main.py $(inputs.cdse_key) $(inputs.cdse_secret) $(inputs.earth_data_hub_key) $(inputs.bbox) $(inputs.sampled_fraction)"
              },
             "inputs": {
                 "cdse_key":{

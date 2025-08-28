@@ -4,7 +4,7 @@ This repository aims on the creation Earth Observation Point Cloud. The reposito
 
 This repository contains two implementation of the EO-PointCloud. One using OPEN3D as the core of PointCloud, and the other one is a workaround with plyfile library which is capable of being injected inside the Component of DeltaTwin. 
 
-![Point CLoud](figs/tyrol2.jpg)
+![Point CLoud](figs/gif_image.gif)
 
 ## Overview
 

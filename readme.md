@@ -154,6 +154,7 @@ pcddeltatwin/
 ├─ manifest.json
 ├─ readme.md
 ├─ requirements.txt
+├─ visualize_pointcloud.py ## Visualize the generated pointcloud
 ```
 
 ## Main.py

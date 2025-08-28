@@ -106,6 +106,10 @@ If you get an error, it may be because the name in the manifest: "name": "eo-poi
 deltatwin component publish -t whatever-tag 0.0.1 
 ```
 
+# EO-POINTCLOUD Component in DeltaTwin
+
+![component](figs/eo-deltatwin.jpg)
+
 At the DeltaTwin web-UI, it should look like this!
 
 ![DeltaTwin](figs/eo-workflow.jpg)

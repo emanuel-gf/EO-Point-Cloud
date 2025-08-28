@@ -73,7 +73,7 @@ sh install_packages.sh
 python main.py your_cdse_id your_cdse_access_key your_earth_data_hub_api_key bbox sampled_fraction
 ```
 
-[DeltaTwin](figs/eo-deltatwin.jpg)
+[DeltaTwin](figs/20250828-1413-50.2334437.mp4)
 
 # How to create a DeltaTwin component 
 
@@ -163,6 +163,7 @@ The repository includes several utility classes to streamline data processing:
 - `PcdGenerator`: For creating point clouds from DEM and imagery data
 - `PointCloudHandler`: For manipulating and saving point clouds
 
+[fig-eo](figs/tyrol.jpg)
 
 ## License
 

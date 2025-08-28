@@ -106,7 +106,9 @@ If you get an error, it may be because the name in the manifest: "name": "eo-poi
 deltatwin component publish -t whatever-tag 0.0.1 
 ```
 
-[DeltaTwin](figs/eo-workflow.jpg)
+At the DeltaTwin web-UI, it should look like this!
+
+![DeltaTwin](figs/eo-workflow.jpg)
 
 ## Repository Structure
 
@@ -165,7 +167,7 @@ The repository includes several utility classes to streamline data processing:
 - `PcdGenerator`: For creating point clouds from DEM and imagery data
 - `PointCloudHandler`: For manipulating and saving point clouds
 
-[fig-eo](figs/tyrol.jpg)
+![fig-eo](figs/tyrol2.jpg)
 
 ## License
 
